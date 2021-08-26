@@ -12,6 +12,8 @@ mongoose.connect(String(mongoURI), {
     useUnifiedTopology:true
 }).then((result)=> {
     console.log('Connected to Mongo DB')
+const mySecret = process.env['MONGO_PASS']
+
     const PORT = process.env.PORT || 5000
 app.listen(PORT, err => {
     console.log(`App listening on ${PORT}`)
