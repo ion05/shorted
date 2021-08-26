@@ -51,10 +51,14 @@ app.get('/success', (req,res)=> {
 })
 app.get('/:shortLink',((req, res) => {
     const shortLink = req.params.shortLink
-
+    if (shortLink!=null) {
     Link.findOne({'shortLink':shortLink}).then((result)=> {
         res.redirect(result.fullLink)
     }).catch((err)=> {
         console.log(err)
     })
+    } else {
+
+    }
+
 }))
