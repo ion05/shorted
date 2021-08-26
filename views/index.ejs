@@ -8,9 +8,12 @@
 <h1>Create a short link</h1>
 <form action="/create-link" method="POST">
     <input name="full" id="full" placeholder="Full Link">
-    <input name="short" id="short" placeholder="Short Link">
+    <input name="short" id="short" placeholder="Short Link" value="<%=shortL%>">
     <button>Create Short Link</button>
 
+</form>
+<form action="/generate" method="POST">
+    <button>Autogenerate</button>
 </form>
 </body>
 </html>

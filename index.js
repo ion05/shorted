@@ -2,6 +2,7 @@ const express = require('express')
 const mongoose = require('mongoose')
 const Link = require('./models/linkSchema')
 const ejs = require('ejs')
+const randomString  = require('randomstring')
 require('dotenv').config()
 
 const app = express()
@@ -21,11 +22,17 @@ app.set('view engine', 'ejs')
 app.use(express.static('public'))
 app.use(express.json());
 app.use(express.urlencoded({extended:true}))
-
+const shortL = null;
 app.get('/', (req,res)  => {
-    res.render('index')
+    res.render('index', {'shortL':shortL})
 })
-
+app.post('/generate', ((req, res) => {
+    const shortL = randomString.generate({
+        length: 5,
+        charset: 'hex'
+    })
+    res.render("index", {'shortL': shortL})
+}))
 app.post('/create-link', (req,res)=> {
     const fullLink = req.body.full
     const shortLink= req.body.short
@@ -46,7 +53,6 @@ app.get('/:shortLink',((req, res) => {
     const shortLink = req.params.shortLink
 
     Link.findOne({'shortLink':shortLink}).then((result)=> {
-        console.log(result)
         res.redirect(result.fullLink)
     }).catch((err)=> {
         console.log(err)
