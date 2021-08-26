@@ -24,7 +24,9 @@ app.set('view engine', 'ejs')
 app.use(express.static('public'))
 app.use(express.json());
 app.use(express.urlencoded({extended:true}))
-const shortL = null;
+
+
+let url = null;
 app.get('/', (req,res)  => {
     res.render('index', {'shortL':shortL})
 })
@@ -43,13 +45,14 @@ app.post('/create-link', (req,res)=> {
         "fullLink": fullLink,
     })
     newLink.save().then((result)=>{
+        url = `https://shorted.gq/${shortLink}`
         res.redirect('/success')
     }).catch((err)=> {
         console.log(err)
     })
 })
 app.get('/success', (req,res)=> {
-    res.render('success')
+    res.render('success',{'link':url})
 })
 app.get('/:shortLink',((req, res) => {
     const shortLink = req.params.shortLink

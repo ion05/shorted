@@ -1,19 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
     <meta charset="UTF-8">
     <title>Home</title>
+
 </head>
+<style>
+    span{
+        font-family: 'Material Icons', sans-serif;
+    }
+</style>
 <body>
 <h1>Create a short link</h1>
 <form action="/create-link" method="POST">
-    <input name="full" id="full" placeholder="Full Link">
-    <input name="short" id="short" placeholder="Short Link" value="<%=shortL%>">
+    <input name="full" id="full" placeholder="Full Link with https:// or http://"> <br><br>
+    <input name="short" id="short" placeholder="Custom Back Link" value="<%=shortL%>">
+<br><br>
     <button>Create Short Link</button>
 
 </form>
-<form action="/generate" method="POST">
-    <button>Autogenerate</button>
-</form>
+<script type="module" src="/js/app.js"></script>
 </body>
 </html>
