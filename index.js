@@ -78,7 +78,7 @@ app.get('/success', (req, res) => {
 })
 app.get('/:shortLink', ((req, res) => {
     const shortLink = req.params.shortLink
-    if (shortLink != null) {
+    if (shortLink != 'favicon.ico') {
         Link.findOne({'shortLink': shortLink}).then((result) => {
             if (result == null) {
             } else {
@@ -89,7 +89,6 @@ app.get('/:shortLink', ((req, res) => {
             console.log(err)
         })
     } else {
-
     }
 
 }))
