@@ -6,6 +6,8 @@ const randomString = require('randomstring')
 require('dotenv').config()
 
 const app = express()
+let error = false
+let msg = ""
 const mongoURI = `mongodb+srv://ion05:${process.env.MONGO_PASS}@cluster0.kdxsn.mongodb.net/link-shortener?retryWrites=true&w=majority`
 mongoose.connect(String(mongoURI), {
     useNewUrlParser: true,
@@ -25,22 +27,26 @@ app.use(express.static('public'))
 app.use(express.json());
 app.use(express.urlencoded({extended: true}))
 
-let error = false
-let type = false
-let msg = ""
 let url = null;
 app.get('/', (req, res) => {
-    res.render('index', {"error": error, "type": type, "msg": msg})
+    res.render('index', {"error": error, 'msg':msg})
 })
 
 app.post('/create-link', async (req, res) => {
     const fullLink = req.body.full
     let shortLink = req.body.short
     if (!shortLink) {
-        shortLink = randomString.generate({
+        try {
+            shortLink = randomString.generate({
             length: 5,
             charset: 'hex'
         })
+        } catch (e) {
+            error = true
+            msg = "Couldnt generate random backlink. Please enter one"
+            res.redirect('/')
+        }
+
 
     }
     const newLink = new Link({
@@ -50,19 +56,22 @@ app.post('/create-link', async (req, res) => {
 
     Link.findOne({'fullLink': fullLink}).then((result) => {
         if (result) {
-            console.log('Already Exists')
+            error = true
+            msg = 'This URL has already been shortened'
+            res.redirect('/')
         } else {
             Link.findOne({'shortLink': shortLink}).then((result) => {
                 if (result) {
-                    console.log('Already Exists')
+                    error = true
+                    msg = 'This backlink already exists. Please enter another one'
+                    res.redirect('/')
                 } else {
                     newLink.save().then((result) => {
-                        url = `https://shorted.gq/${shortLink}`
+                        url = `https://www.shorted.gq/${shortLink}`
                         res.redirect('/success')
                     }).catch((err) => {
                         error = true
-                        type = "error"
-                        msg = err
+                        msg = 'Trouble saving the shortened URL. Please try again later'
                         res.redirect('/')
                         console.log(err)
                     })
@@ -78,17 +87,24 @@ app.get('/success', (req, res) => {
 })
 app.get('/:shortLink', ((req, res) => {
     const shortLink = req.params.shortLink
-    if (shortLink != 'favicon.ico') {
-        Link.findOne({'shortLink': shortLink}).then((result) => {
+        if (shortLink != 'favicon.ico')
+        {
+            Link.findOne({'shortLink': shortLink}).then((result) => {
             if (result == null) {
+                error = true
+                msg = 'This backlink doesnt exists. Please check the spelling'
+                res.redirect('/')
             } else {
                 res.redirect(result.fullLink)
             }
 
         }).catch((err) => {
+            error = true
+            msg = 'Some error with fetching the shortened url. Please try again later'
+            res.redirect('/')
             console.log(err)
         })
-    } else {
-    }
+        } else {}
+
 
 }))
