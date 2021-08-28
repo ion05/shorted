@@ -53,20 +53,19 @@ app.post('/create-link', async (req, res) => {
         "shortLink": shortLink,
         "fullLink": fullLink,
     })
-
-    Link.findOne({'fullLink': fullLink}).then((result) => {
-        if (result) {
-            error = true
-            msg = 'This URL has already been shortened'
-            res.redirect('/')
-        } else {
-            Link.findOne({'shortLink': shortLink}).then((result) => {
-                if (result) {
-                    error = true
-                    msg = 'This backlink already exists. Please enter another one'
-                    res.redirect('/')
-                } else {
-                    newLink.save().then((result) => {
+    const full = await Link.findOne({"fullLink":fullLink})
+    const short = await Link.findOne({'shortLink':shortLink})
+    if(full) {
+        error = true
+        msg = 'This URL has already been shortened'
+        url = "https://wwww.shorted.gq/"+full.shortLink
+        res.redirect('/success')
+    } else if (short) {
+        error = true
+        msg= "This backlink already exists. Please choose another one"
+        res.redirect('/')
+    } else {
+        newLink.save().then((result) => {
                         url = `https://www.shorted.gq/${shortLink}`
                         res.redirect('/success')
                     }).catch((err) => {
@@ -75,15 +74,11 @@ app.post('/create-link', async (req, res) => {
                         res.redirect('/')
                         console.log(err)
                     })
-                }
-            })
-
-        }
-    })
+    }
 
 })
 app.get('/success', (req, res) => {
-    res.render('success', {'link': url})
+    res.render('success', {'link': url, error,msg})
 })
 app.get('/:shortLink', ((req, res) => {
     const shortLink = req.params.shortLink

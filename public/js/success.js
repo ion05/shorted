@@ -1,2 +1,4 @@
 var notyf = new Notyf();
-notyf.success('Link Shortened Successfully')
+if (error) {
+    notyf.error(msg)
+} else {notyf.success('Link Shortened Successfully')}
